@@ -1,0 +1,8 @@
+ssh_keys/
+student_credentials
+secret_key.txt
+sk.txt
+__pycache__/
+*.pyc
+cache/
+out/
