@@ -5,7 +5,7 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 // STARTER CODE REPLACE WITH YOUR COMPLETED BRIDGE CODE
-contract SourceStarterCode is AccessControl {
+contract Source is AccessControl {
   bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
   bytes32 public constant WARDEN_ROLE = keccak256("BRIDGE_WARDEN_ROLE");
 	mapping( address => bool) public approved;
@@ -21,18 +21,28 @@ contract SourceStarterCode is AccessControl {
       _grantRole(WARDEN_ROLE, admin);
 
   }
+   function registerToken(address _token) public onlyRole(ADMIN_ROLE) {
+    require(!approved[_token], "Already approved");
+    approved[_token] = true;
+    tokens.push(_token);
 
-	function deposit(address _token, address _recipient, uint256 _amount ) public {
-		//YOUR CODE HERE
-	}
+    emit Registration(_token);
+}
 
-	function withdraw(address _token, address _recipient, uint256 _amount ) onlyRole(WARDEN_ROLE) public {
-		//YOUR CODE HERE
-	}
+  function deposit(address _token, address _recipient, uint256 _amount) public {
+    require(approved[_token], "Token not approved");
 
-	function registerToken(address _token) onlyRole(ADMIN_ROLE) public {
-		//YOUR CODE HERE
-	}
+    ERC20(_token).transferFrom(msg.sender, address(this), _amount);
 
+    emit Deposit(_token, _recipient, _amount);
+}
+
+  function withdraw(address _token, address _recipient, uint256 _amount) public onlyRole(WARDEN_ROLE) {
+    require(approved[_token], "Token not approved");
+
+    ERC20(_token).transfer(_recipient, _amount);
+
+    emit Withdrawal(_token, _recipient, _amount);
+}
 
 }
