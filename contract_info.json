@@ -1,6 +1,7 @@
 {
   "source": {
     "address": "0xdDc6FEB3Ea968128fa3Fa0D7EA75A9E7E6e6aF8A",
+    "private_key": "0xc80f209debb26e606796e33dadf3680124691dcaaf5543a464034a8dd1b34b83",
     "abi": [
       {"type":"constructor","inputs":[{"name":"admin","type":"address"}],"stateMutability":"nonpayable"},
       {"type":"function","name":"approved","inputs":[{"name":"","type":"address"}],"outputs":[{"name":"","type":"bool"}],"stateMutability":"view"},
@@ -13,6 +14,7 @@
 
   "destination": {
     "address": "0x79e8Bc088fBa28f3FD3D07054225c768D4170939",
+    "private_key": "0xc80f209debb26e606796e33dadf3680124691dcaaf5543a464034a8dd1b34b83",
     "abi": [
       {"type":"constructor","inputs":[{"name":"admin","type":"address"}],"stateMutability":"nonpayable"},
       {"type":"function","name":"createToken","inputs":[{"name":"_underlying_token","type":"address"},{"name":"name","type":"string"},{"name":"symbol","type":"string"}],"outputs":[{"name":"","type":"address"}],"stateMutability":"nonpayable"},
