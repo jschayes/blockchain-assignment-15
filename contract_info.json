@@ -1,6 +1,6 @@
 {
   "source": {
-    "address": "0xaad62213FC4daB098a5e23748ec4faa2b83706AD",
+    "address": "0x7f940c9CF15C0EA24785027858246E7e6Dcd9dA8",
     "abi": [
       {"type":"constructor","inputs":[{"name":"admin","type":"address"}],"stateMutability":"nonpayable"},
       {"type":"function","name":"approved","inputs":[{"name":"","type":"address"}],"outputs":[{"name":"","type":"bool"}],"stateMutability":"view"},
