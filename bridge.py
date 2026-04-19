@@ -80,7 +80,7 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             recipient = evt["args"]["recipient"]
             amount = evt["args"]["amount"]
 
-            dest_nonce = dest_w3.eth.get_transaction_count(dest_acct.address)
+            dest_nonce = dest_w3.eth.get_transaction_count(dest_acct.address, "pending")
 
             tx = dest_contract.functions.wrap(
                 token,
@@ -123,7 +123,7 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             recipient = evt["args"]["to"]
             amount = evt["args"]["amount"]
 
-            source_nonce = source_w3.eth.get_transaction_count(source_acct.address)
+            source_nonce = source_w3.eth.get_transaction_count(source_acct.address, "pending")
 
             tx = source_contract.functions.withdraw(
                 token,
