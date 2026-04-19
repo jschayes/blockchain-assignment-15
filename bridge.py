@@ -22,7 +22,7 @@ def connect_to(chain):
 
 
 def get_contract_info(chain, contract_info):
-  
+
     try:
         with open(contract_info, 'r') as f:
             contracts = json.load(f)
@@ -34,7 +34,7 @@ def get_contract_info(chain, contract_info):
 
 
 def scan_blocks(chain, contract_info="contract_info.json"):
-  
+
 
     if chain not in ['source', 'destination']:
         print(f"Invalid chain: {chain}")
@@ -80,6 +80,8 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             recipient = evt["args"]["recipient"]
             amount = evt["args"]["amount"]
 
+            dest_nonce = dest_w3.eth.get_transaction_count(dest_acct.address)
+
             tx = dest_contract.functions.wrap(
                 token,
                 recipient,
@@ -98,7 +100,7 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             )
             tx_hash = dest_w3.eth.send_raw_transaction(signed_tx.raw_transaction)
             print(dest_w3.to_hex(tx_hash))
-            dest_nonce += 1
+            dest_w3.eth.wait_for_transaction_receipt(tx_hash)
 
     elif chain == "destination":
         event_filter = contract.events.Unwrap.create_filter(
@@ -121,6 +123,8 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             recipient = evt["args"]["to"]
             amount = evt["args"]["amount"]
 
+            source_nonce = source_w3.eth.get_transaction_count(source_acct.address)
+
             tx = source_contract.functions.withdraw(
                 token,
                 recipient,
@@ -139,6 +143,6 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             )
             tx_hash = source_w3.eth.send_raw_transaction(signed_tx.raw_transaction)
             print(source_w3.to_hex(tx_hash))
-            source_nonce += 1
+            source_w3.eth.wait_for_transaction_receipt(tx_hash)
 
     return 1
