@@ -23,9 +23,7 @@ def connect_to(chain):
 
 
 def get_contract_info(chain, contract_info):
-    """
-    Load the contract_info file into a dictionary
-    """
+
     try:
         with open(contract_info, 'r') as f:
             contracts = json.load(f)
@@ -37,17 +35,7 @@ def get_contract_info(chain, contract_info):
 
 
 def scan_blocks(chain, contract_info="contract_info.json"):
-    """
-    chain - should be either "source" or "destination"
-    Scan the last 5 blocks of the source and destination chains
-    Look for 'Deposit' events on the source chain and 'Unwrap' events on the destination chain
 
-    When Deposit events are found on the source chain, call the 'wrap' function
-    on the destination chain
-
-    When Unwrap events are found on the destination chain, call the 'withdraw'
-    function on the source chain
-    """
     global PROCESSED_EVENTS
 
     if chain not in ['source', 'destination']:
@@ -67,7 +55,9 @@ def scan_blocks(chain, contract_info="contract_info.json"):
     contract = w3.eth.contract(address=contract_address, abi=abi)
 
     latest_block = w3.eth.block_number
-    start_block = max(0, latest_block - 5)
+    
+    window = 20 if chain == "destination" else 5
+    start_block = max(0, latest_block - window)
     end_block = latest_block
 
     if chain == "source":
