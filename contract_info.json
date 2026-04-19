@@ -4,11 +4,16 @@
     "private_key": "0xc80f209debb26e606796e33dadf3680124691dcaaf5543a464034a8dd1b34b83",
     "abi": [
       {"type":"constructor","inputs":[{"name":"admin","type":"address"}],"stateMutability":"nonpayable"},
+      {"type":"function","name":"ADMIN_ROLE","inputs":[],"outputs":[{"name":"","type":"bytes32"}],"stateMutability":"view"},
+      {"type":"function","name":"WARDEN_ROLE","inputs":[],"outputs":[{"name":"","type":"bytes32"}],"stateMutability":"view"},
       {"type":"function","name":"approved","inputs":[{"name":"","type":"address"}],"outputs":[{"name":"","type":"bool"}],"stateMutability":"view"},
+      {"type":"function","name":"tokens","inputs":[{"name":"","type":"uint256"}],"outputs":[{"name":"","type":"address"}],"stateMutability":"view"},
       {"type":"function","name":"deposit","inputs":[{"name":"_token","type":"address"},{"name":"_recipient","type":"address"},{"name":"_amount","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
       {"type":"function","name":"registerToken","inputs":[{"name":"_token","type":"address"}],"outputs":[],"stateMutability":"nonpayable"},
       {"type":"function","name":"withdraw","inputs":[{"name":"_token","type":"address"},{"name":"_recipient","type":"address"},{"name":"_amount","type":"uint256"}],"outputs":[],"stateMutability":"nonpayable"},
-      {"type":"event","name":"Deposit","inputs":[{"name":"token","type":"address","indexed":true},{"name":"recipient","type":"address","indexed":true},{"name":"amount","type":"uint256","indexed":false}],"anonymous":false}
+      {"type":"event","name":"Deposit","inputs":[{"name":"token","type":"address","indexed":true},{"name":"recipient","type":"address","indexed":true},{"name":"amount","type":"uint256","indexed":false}],"anonymous":false},
+      {"type":"event","name":"Withdrawal","inputs":[{"name":"token","type":"address","indexed":true},{"name":"recipient","type":"address","indexed":true},{"name":"amount","type":"uint256","indexed":false}],"anonymous":false},
+      {"type":"event","name":"Registration","inputs":[{"name":"token","type":"address","indexed":true}],"anonymous":false}
     ]
   },
   "destination": {
