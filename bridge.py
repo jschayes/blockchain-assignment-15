@@ -5,6 +5,7 @@ from datetime import datetime
 import json
 import pandas as pd
 
+PROCESSED_EVENTS = set()
 
 def connect_to(chain):
     if chain == 'source':  # The source contract chain is avax
@@ -22,7 +23,9 @@ def connect_to(chain):
 
 
 def get_contract_info(chain, contract_info):
-
+    """
+    Load the contract_info file into a dictionary
+    """
     try:
         with open(contract_info, 'r') as f:
             contracts = json.load(f)
@@ -34,7 +37,18 @@ def get_contract_info(chain, contract_info):
 
 
 def scan_blocks(chain, contract_info="contract_info.json"):
+    """
+    chain - should be either "source" or "destination"
+    Scan the last 5 blocks of the source and destination chains
+    Look for 'Deposit' events on the source chain and 'Unwrap' events on the destination chain
 
+    When Deposit events are found on the source chain, call the 'wrap' function
+    on the destination chain
+
+    When Unwrap events are found on the destination chain, call the 'withdraw'
+    function on the source chain
+    """
+    global PROCESSED_EVENTS
 
     if chain not in ['source', 'destination']:
         print(f"Invalid chain: {chain}")
@@ -53,11 +67,8 @@ def scan_blocks(chain, contract_info="contract_info.json"):
     contract = w3.eth.contract(address=contract_address, abi=abi)
 
     latest_block = w3.eth.block_number
-    start_block = max(0, latest_block - 50)
+    start_block = max(0, latest_block - 5)
     end_block = latest_block
-
-    acct = w3.eth.account.from_key(info["private_key"])
-    nonce = w3.eth.get_transaction_count(acct.address)
 
     if chain == "source":
         event_filter = contract.events.Deposit.create_filter(
@@ -66,6 +77,11 @@ def scan_blocks(chain, contract_info="contract_info.json"):
         )
         events = event_filter.get_all_entries()
 
+        new_events = [e for e in events if e["transactionHash"].hex() not in PROCESSED_EVENTS]
+
+        if not new_events:
+            return 1
+
         dest_info = get_contract_info("destination", contract_info)
         dest_w3 = connect_to("destination")
         dest_contract = dest_w3.eth.contract(
@@ -73,9 +89,8 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             abi=dest_info["abi"]
         )
         dest_acct = dest_w3.eth.account.from_key(dest_info["private_key"])
-        dest_nonce = dest_w3.eth.get_transaction_count(dest_acct.address)
 
-        for evt in events:
+        for evt in new_events:
             token = evt["args"]["token"]
             recipient = evt["args"]["recipient"]
             amount = evt["args"]["amount"]
@@ -101,6 +116,7 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             tx_hash = dest_w3.eth.send_raw_transaction(signed_tx.raw_transaction)
             print(dest_w3.to_hex(tx_hash))
             dest_w3.eth.wait_for_transaction_receipt(tx_hash)
+            PROCESSED_EVENTS.add(evt["transactionHash"].hex())
 
     elif chain == "destination":
         event_filter = contract.events.Unwrap.create_filter(
@@ -109,6 +125,11 @@ def scan_blocks(chain, contract_info="contract_info.json"):
         )
         events = event_filter.get_all_entries()
 
+        new_events = [e for e in events if e["transactionHash"].hex() not in PROCESSED_EVENTS]
+
+        if not new_events:
+            return 1
+
         source_info = get_contract_info("source", contract_info)
         source_w3 = connect_to("source")
         source_contract = source_w3.eth.contract(
@@ -116,9 +137,8 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             abi=source_info["abi"]
         )
         source_acct = source_w3.eth.account.from_key(source_info["private_key"])
-        source_nonce = source_w3.eth.get_transaction_count(source_acct.address)
 
-        for evt in events:
+        for evt in new_events:
             token = evt["args"]["underlying_token"]
             recipient = evt["args"]["to"]
             amount = evt["args"]["amount"]
@@ -144,5 +164,6 @@ def scan_blocks(chain, contract_info="contract_info.json"):
             tx_hash = source_w3.eth.send_raw_transaction(signed_tx.raw_transaction)
             print(source_w3.to_hex(tx_hash))
             source_w3.eth.wait_for_transaction_receipt(tx_hash)
+            PROCESSED_EVENTS.add(evt["transactionHash"].hex())
 
     return 1
