@@ -22,30 +22,19 @@ def connect_to(chain):
 
 
 def get_contract_info(chain, contract_info):
-    """
-    Load the contract_info file into a dictionary
-    """
+   
     try:
         with open(contract_info, 'r') as f:
             contracts = json.load(f)
     except Exception as e:
         print(f"Failed to read contract info\nPlease contact your instructor\n{e}")
         return 0
+
     return contracts[chain]
 
 
 def scan_blocks(chain, contract_info="contract_info.json"):
-    """
-    chain - should be either "source" or "destination"
-    Scan the last 5 blocks of the source and destination chains
-    Look for 'Deposit' events on the source chain and 'Unwrap' events on the destination chain
-
-    When Deposit events are found on the source chain, call the 'wrap' function
-    on the destination chain
-
-    When Unwrap events are found on the destination chain, call the 'withdraw'
-    function on the source chain
-    """
+   
 
     if chain not in ['source', 'destination']:
         print(f"Invalid chain: {chain}")
