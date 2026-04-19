@@ -22,7 +22,7 @@ def connect_to(chain):
 
 
 def get_contract_info(chain, contract_info):
-   
+  
     try:
         with open(contract_info, 'r') as f:
             contracts = json.load(f)
@@ -34,7 +34,7 @@ def get_contract_info(chain, contract_info):
 
 
 def scan_blocks(chain, contract_info="contract_info.json"):
-   
+  
 
     if chain not in ['source', 'destination']:
         print(f"Invalid chain: {chain}")
@@ -53,7 +53,7 @@ def scan_blocks(chain, contract_info="contract_info.json"):
     contract = w3.eth.contract(address=contract_address, abi=abi)
 
     latest_block = w3.eth.block_number
-    start_block = max(0, latest_block - 4)
+    start_block = max(0, latest_block - 50)
     end_block = latest_block
 
     acct = w3.eth.account.from_key(info["private_key"])
